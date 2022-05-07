@@ -43,6 +43,7 @@ pub fn rtt_main(args: TokenStream, input: TokenStream) -> TokenStream {
 
     let main_func_name = format_ident!("__{}_main_func", arg.appname.as_ref().unwrap());
     let run_seg_name = format_ident!("__{}_run_seg", arg.appname.as_ref().unwrap());
+    let run_func_name = format_ident!("__{}_run_func", arg.appname.as_ref().unwrap());
     let run_struct_name = format_ident!("__{}_run_seg_struct", arg.appname.as_ref().unwrap());
     let cmd_seg_name = format_ident!("__{}_cmd_seg", arg.appname.as_ref().unwrap());
     let cmd_struct_name = format_ident!("__{}_cmd_seg_struct", arg.appname.as_ref().unwrap());
@@ -112,10 +113,16 @@ pub fn rtt_main(args: TokenStream, input: TokenStream) -> TokenStream {
             struct #run_struct_name (*const ());
             unsafe impl Sync for #run_struct_name{}
 
+            #[no_mangle]
+            pub unsafe extern "C" fn #run_func_name() -> i32 {
+                #main_func_name(0, 0 as _);
+                0
+            }
+
             #[link_section = ".rti_fn.6"]
             #[no_mangle]
             static #run_seg_name: #run_struct_name
-                = #run_struct_name (#main_func_name as *const ());
+                = #run_struct_name (#run_func_name as *const ());
         )
     };
 

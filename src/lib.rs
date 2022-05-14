@@ -49,6 +49,7 @@ pub fn rtt_main(args: TokenStream, input: TokenStream) -> TokenStream {
     let cmd_struct_name = format_ident!("__{}_cmd_seg_struct", arg.appname.as_ref().unwrap());
     let cmd_namestr_name = format_ident!("__{}_cmd_namestr", arg.appname.as_ref().unwrap());
     let cmd_descstr_name = format_ident!("__{}_cmd_descstr", arg.appname.as_ref().unwrap());
+    let mod_name = format_ident!("__app_init_{}_", arg.appname.as_ref().unwrap());
     let call_func_name = f.sig.ident.clone();
 
     // check the function signature
@@ -165,7 +166,7 @@ pub fn rtt_main(args: TokenStream, input: TokenStream) -> TokenStream {
 
     quote!(
         #origin
-        mod __app_init {
+        mod #mod_name {
             use super::#call_func_name;
             use core::marker::Sync;
             extern crate alloc;
